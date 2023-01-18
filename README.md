@@ -231,7 +231,7 @@ Para resolver problema, as classes devem depender de interfaces, que são abstra
 Com isso, atendemos a ambos os itens do princípios SOLID
 Também conseguimos melhorar a testabilidade da classe, pois ao escrever um teste unitário, poderemos alterar o comportamento das dependências
 
-### Camada Core
+## Camada Core
 Camada mais importante da Arquitetura Limpa. É nela onde o foco de desenvolvimento inicial deve estar
 O Domain-Driven Design está bem caracterizado nos conceitos dessa arquitetura, por pregar a importância de se entender bem o domínio, as regras de negócio contidas nele, bem como o linguajar utilizado pelos diferentes usuários (linguagem ubíqua)
 
@@ -241,57 +241,35 @@ Alguns conceitos de Domain-Driven Design que utilizaremos
 - Linguagem Ubíqua: modelo de linguagem universal para comunicação entre desenvolvedores e analistas de negócios
 
 **Contém os seguintes componentes:**
-- Entidades: classes de domínio, que representam as entidades que foram modeladas a nível macro do módulo 2. Alguns exemplos são Project e User.
-- Enums: tipo de enumeração do C#, sendo definido um conjunto de constantes nomeadas (geralmente números inteiros). Em nosso caso, usaremos para status de projeto, de usuário e de freelancer.
-- Data Access Objects (DTO): objetos de transporte de dados, geralmente utilizados em retorno de serviços de infra-estrutura (integração com outro sistema, por exemplo), consultas com projeção de dados diferenciadas (com Dapper, por exemplo). Usaremos para o segundo exemplo.
-- Serviços de camada de domínio: quando uma operação do domínio envolve múltiplas classes ou estados, extrapolando responsabilidades um serviço de cada de domínio é indicado. Usaremos para validação de início de projeto.
-- Interfaces (de serviços de infra-estrutura, domínio, repositórios): utilizadas em diferentes camadas, como API, Aplicação e Infraestrutura.
-- Exceções de domínio: exceções específicas a cenários de problema no fluxo de negócio. Elas serão tratadas via filtro de ASP.NET Core, que tratará as exceções de maneira automática. Um exemplo delas seria o de ProjectAlreadyStartedException, que indicaria uma ação de início de projeto que já foi inicializado.
+- **Entidades:** classes de domínio, que representam as entidades que foram modeladas a nível macro do módulo 2. Alguns exemplos são Project e User.
+- **Enums:** tipo de enumeração do C#, sendo definido um conjunto de constantes nomeadas (geralmente números inteiros). Em nosso caso, usaremos para status de projeto, de usuário e de freelancer.
+- **Data Access Objects (DTO):** objetos de transporte de dados, geralmente utilizados em retorno de serviços de infra-estrutura (integração com outro sistema, por exemplo), consultas com projeção de dados diferenciadas (com Dapper, por exemplo). Usaremos para o segundo exemplo.
+- **Serviços de camada de domínio:** quando uma operação do domínio envolve múltiplas classes ou estados, extrapolando responsabilidades um serviço de cada de domínio é indicado. Usaremos para validação de início de projeto.
+- **Interfaces (de serviços de infra-estrutura, domínio, repositórios):** utilizadas em diferentes camadas, como API, Aplicação e Infraestrutura.
+- **Exceções de domínio:** exceções específicas a cenários de problema no fluxo de negócio. Elas serão tratadas via filtro de ASP.NET Core, que tratará as exceções de maneira automática. Um exemplo delas seria o de ProjectAlreadyStartedException, que indicaria uma ação de início de projeto que já foi inicializado.
 
-
-### Camada Infrastructure
-- Camada responsável por código de infraestrutura, como acesso a dados, 
-conexão com serviços de computação na nuvem, integração entre sistemas, entre
-outros.
-- Cada um desses sub-itens pode ser dividido em projetos próprios, como
-Persistence, Integration e CloudService
+## Camada Infrastructure
+- Camada responsável por código de infraestrutura, como acesso a dados, conexão com serviços de computação na nuvem, integração entre sistemas, entre outros.
+- Cada um desses sub-itens pode ser dividido em projetos próprios, como Persistence, Integration e CloudService
 
 **Contém os seguintes componentes:**
-- Acesso a dados: classes responsáveis pelo acesso a dados. No Entity Framework
-Core, corresponde ao contexto de dados (com DbContext) e implementação de 
-repositórios de dados.
-- Serviços de infraestrutura: classes responsáveis por acesso a recursos na
-nuvem (armazenamento de arquivos, mensageria, entre outros), integração com 
-outros sistemas (legados, ERP, APIs de consulta, ou mesmo outras APIs da 
-empresa), entre outros.
+- **Acesso a dados:** classes responsáveis pelo acesso a dados. No Entity Framework Core, corresponde ao contexto de dados (com DbContext) e implementação de repositórios de dados.
+- **Serviços de infraestrutura:** classes responsáveis por acesso a recursos na nuvem (armazenamento de arquivos, mensageria, entre outros), integração com outros sistemas (legados, ERP, APIs de consulta, ou mesmo outras APIs da empresa), entre outros.
 
-### Camada Application 
-- Camada responsável por código de aplicação, onde as funcionalidades expostas
-vão estar, em forma de serviços (ou Commands e Queries, dependendo do padrão 
-utilizado)
-- Também contém os modelos de entrada e saída da aplicação, que serão 
-utilizados diretamente na API (seja no retorno da API, ou no corpo da 
-requisição
+## Camada Application 
+- Camada responsável por código de aplicação, onde as funcionalidades expostas vão estar, em forma de serviços (ou Commands e Queries, dependendo do padrão utilizado)
+- Também contém os modelos de entrada e saída da aplicação, que serão utilizados diretamente na API (seja no retorno da API, ou no corpo da requisição
 
 **Contém os seguintes componentes:**
-- Serviços: classes responsáveis pelas funcionalidades expostas, geralmente
-sendo criado um por cada entidade. Em nosso caso, pode ser criado alguns
-como ProjectService e UserService
-- Modelos de entrada e saída: classes, que podem ser consideradas DTOs, 
-responsáveis por definir as propriedades de objetos de entrada e saída
-dos endpoints / funcionalidades
+- **Serviços:** classes responsáveis pelas funcionalidades expostas, geralmente sendo criado um por cada entidade. Em nosso caso, pode ser criado alguns como ProjectService e UserService
+- **Modelos de entrada e saída:** classes, que podem ser consideradas DTOs, responsáveis por definir as propriedades de objetos de entrada e saída dos endpoints / funcionalidades
 
-### Camada API
-- Camada responsável pelo código de interface (seja ela uma API ou a View
-e Controller do MVC).
-- Essa camada depende de todas as outras. Nela é feita a configuração de 
-injeção de dependência envolvendo as interfaces contidas no Core, e das
-implementações contidas na Infrastructure e Core.
+## Camada API
+- Camada responsável pelo código de interface (seja ela uma API ou a View e Controller do MVC).
+- Essa camada depende de todas as outras. Nela é feita a configuração de injeção de dependência envolvendo as interfaces contidas no Core, e das implementações contidas na Infrastructure e Core.
 
 **Contém os seguintes componentes:**
-- Controllers: classes responsáveis por definir os pontos de acesso de 
-API, que correspondem às Actions e suas rotas correspondentes.
-- Filters: classes que influenciam no processomento e fluxo das requisições.
-Por exemplo, usaremos um filtro no módulo de validação de APIs, e também
-um filtro para tratamento de exceções.
+- **Controllers:** classes responsáveis por definir os pontos de acesso de API, que correspondem às Actions e suas rotas correspondentes.
+- **Filters:** classes que influenciam no processomento e fluxo das requisições.
+Por exemplo, usaremos um filtro no módulo de validação de APIs, e também um filtro para tratamento de exceções.
 
