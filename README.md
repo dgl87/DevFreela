@@ -273,3 +273,150 @@ Alguns conceitos de Domain-Driven Design que utilizaremos
 - **Filters:** classes que influenciam no processomento e fluxo das requisições.
 Por exemplo, usaremos um filtro no módulo de validação de APIs, e também um filtro para tratamento de exceções.
 
+# Persistência de Dados
+## O que significa Persistência de Dados?
+- Persistir é o processo de armazenar dados de maneira a que, mesmo após a interrução do serviço de armazenamento ou do processo que o armazenou, o dado ainda existe
+- Dados persistidos devem ser estáticos (a não ser que sejam alterados explicitamente), recuperáveis mesmo após falhas e são importantes ao negócio
+
+## Exemplos de fontes de dados persistentes
+- Banco de dados relacionais e não relacionais, como SQL Server, PostgreeSQL, MySQL, Nei4j, MongoDB, etc
+- Arquivos em disco, por exemplo em logs de dados
+- Containers / Buckets de dados, como no Amazon S3, Azure Storage, Google Cloud Storage
+
+## O que é ORM?
+- ** Object-Relational Mapper **, representa ferramentas utilizadas para agilizar e simplificar operações que envolvem persistência de dados ou acesso a eles
+- Funcionam como uma ponte do ** modelo orientado a objetos, ** baseado em classes e propriedades e representados geralmente como JSON, para os ** modelos relacionais ** baseados em tabelas e colunas
+
+No caso do .NET, antigamente precisava-se utilizar o ADO.NET, que é um conjunto de namespaces do .NET e suas classes e métodos para acesso a dados.
+Porém, ele não oferece uma alternativa ágil e simplificada, sendo bastante passivo de erros de escrita de nomes de colunas, entre outros problemas.
+Diante disso, surgiram os primeiros ORMs, se destacando o ** Entity Framework ** e o ** LINQ-to-SQL **
+
+As ORMs foram se atualizando, oferecendo uma experiência mais flexível, permitindo tanto utilizar simplificações de acesso a tabelas, quanto a utilizar expressões SQL diretamente.
+
+# Entity Framework Core
+- É a ORM mais utilizada para desennvolvimento em .NET, sendo multiplataforma open-source, e mantida pela Microsoft
+- É madura, tendo sido evoluída junto ao .NET Core, e com performance e funcionalidades sendo melhoradas a cada versão
+- Os pacotes a serem utilizados são ** Microsoft.EntityFrameworkCore.SqlServer ** e ** Microsoft.Entity.FrameworkCore.Tolls **
+
+- Tem suporte a diferentes bancos de dados como SQL Server, SQLite, PostgreeSQL, MySQL, CosmosDB, etc
+
+** Pricipais conceitos **
+- DbContext
+- DbSet
+- Migrations
+
+## DbContext
+- Representa o banco de dados, que em bancos de dados relacionais é composto por tabelas, procedimentos armazenados, views, gatilhos entre outros
+- É composto por propriedades de tipo DbSet's
+- Esta classe deve ser herdada, e geralmente se utiliza o nome da aplicação + DbContext para nomear. Em nosso caso, poderia ser ** DevFreelaDbContext **
+
+## DbSet
+- Representa uma tabela de um banco de dados, sendo utilizado de maneira tipada, como DbSet<T>. O T seria uma entidade do domínio, que estaria sendo representada como uma tabela no banco de dados
+- Exemplos de DbSet que usaremos são ** DbSet<Project>, DbSet<User> e DbSet<Skill> **
+
+## Migration
+- Classe que representa alterações do modelo de dados da aplicações que devem ser replicados no banco de dados
+- Utilizados na abordagem **Code-First,**, onde o primeiro escrevemos o código, adicionamos as entidades como DbSet, configuramos corretamente, e então geramos a Migration
+- Devem ser executadas ** a cada alteração ** no modelo de daods, já que qualquer diferença entre o modelo da aplicação e do banco de daods resultará em erro
+
+Em sistemas reais existem diversas maneiras de se trabalhar com elas, como:
+- Geradas e executadas diretamente no banco de dados alvo
+- Geradas, mas tanto em formato tradicional quanto em script SQL. O script SQL que representa a mudança deverá fazer parte do versionamento do código, e também ser enviado para o setor de Infra-estrutura, através de um chamado para executar as alterações
+- Scripts SQL gerados, versionadas, mas com mudança aplicada via aplicação terceira, commo o Flyway
+  
+  # Configurando o ambiente
+- Idealmente, instalar o SQL Express e o SQL Management Studio
+- Para sistemas que não sejam Windows, uma alternativa interessante ao SQL Management Studio é o Azure Data Studio
+- Instalar as ferramentas do EF Tools globalmente **dotnet tool install --global dotnet-ef**
+
+# Configurando as Entidades
+Existem diversas configurações que podem ser feitas em relação a DbSet, feitas a partir do objeto de tipo **ModelBuilder.** Por exemplo:
+- Tabelas mapeadas a partir das entidades
+- Colunas mapeadas a partir das propriedades
+
+Método **OnModelCreating,** dentro da classe que herda do ** DbContext**
+
+```c#
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+	modelBuilder.Entity<T>()...
+}
+```
+
+## Configurando as Entidades
+Para tabelas, deve-se acessar a propriedade **Entity<T>** do **ModelBuilder,** e as configurações mais comuns são:
+- **ToTable:** define o nome da tabela do banco de dados
+- **HasKey:** define a chave primária
+* **HasData:** define um conjunto de dados iniciais
+- **Property:** permite configurar as propriedades
+
+Para propriedades, deve-se acessar a propriedade **Property,** reccebendo a propriedade via expressão lambda
+- **HasMaxLength:** tamanho máximo
+- **HasColumName:** nome da coluna da tabela
+- **IsRequired:** define a obrigatoriedade de valor
+- **HasDefaultValueSql:** define um valor padrão inicial usando uma expressão SQL
+
+## Configurando relacionamentos
+O fluxo para configurar um relacionamento geralmente é o seguinte:
+- Criar a propriedade que representa chave estrangeira
+- Criar propriedade de navegação
+- Configurar o relacionamento entre as entidades utilizando os métodos _HasMany_, _WhiteOne_, _HasOne_
+- Configurar chave estrangeira com _HasForeignKey_
+
+## Refatorando as configurações 
+É bem comum encontrar classes DbContext lotadas de configurações, já que o tamanho escala com a quantidade de entidades / tabelas e propriedades configuradas.
+É possível criar classes que implementem _IEntityTypeConfiguration<T>_, onde T é a classe a ser configurada, e migrar o código para ela
+Todas as classes de configuração podem então ser adicionadas de uma vez através do código a seguir
+```c#
+protected override void OnModelCreating(ModelBuilder builder)
+{
+	builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+}
+```
+
+## Gerando e aplicando Migrations
+Gerar e aplicar Migrations é bem simples, porém uma pequena configuração deve ser feita no projeto API, para que possa ser realizada
+- Adicionar a cadeia de conexão do banco de dados utilizado no arquivo **_appsettings.json_**
+```c#
+"ConnectionStrings": {
+	"DevFreelaCs": "Server=localhost\\SQLEXPRESS; Database=DevFreela;Trusted_Connection=True;"
+}
+```
+
+- Adicionar a seguinte linha de código no método _ConfigureServices_ da classe **_Startup_*
+```c#
+"services.AddDbContext<DevFreelaDbContext>(
+	options => options.UseSqlServer(Configuration.GetConnectionString("DevFreelaCs")));
+}
+```
+
+## Configurando as Entidades
+Feito isso, basta executar os dois comandos seguintes, na pasta do projeto **Persistence**
+- _donet ef migrations add NomeMigration -s
+	../DevFreela.API/DevFreela.API.csproj -o
+	../Persistence/Migrations_
+- _dotnet ef database update -seguinte
+	../DevFreela.API/DevFreela.API.csproj_
+  
+## EF Core em Memória
+Em algumas situações, a disponibilidade de um servidor SQL Server para o desenvolvimento de um projeto pode ser restrita, ou mesmo inexistente em início de projetos, por exemplo
+Isso pode ocorrer devido a burocracia no fornecimento de um servidor, problemas de indisponibilidade devido a instabilidade, entre outras situações.
+
+Em situações do tipo, o suporte a banco de dados em memória do Entity Framework Core pode literalmente salvar projetos
+Com o código a seguir, você não precisa mais se preocupar em aplicar migrations, e avançar o projeto mesmo sem BD
+```c#
+services.AddDbContext<DevFreelaDbContext>(options => options.UseInMemoryDatabase("DevFreela"));
+```
+
+- Lembrar de instalar o pacote
+**Microsoft.EntityFrameworkCore.InMemory**
+
+## Dapper ORM
+### Dapper ORM
+ORM mais performática e simples que o EF Core, de fácil adoção em um projeto que já utiliza o EF Core ou outros métodos de acessos a dados
+- Apresenta métodos de extensão ao IDbConnection (no caso de SQL Server, SqlConnection)
+- É flexível, utilizando consultas SQL diretamente, permitindo uso de INSERT, DELETE, UPDATE, Procedimentos Armazenados, entre outros.
+
+Entre os métodos de extensão oferecidos, os mais utilizados são:
+- **Execute / ExecuteAsync:** recebe uma cadeia de caracteres com o comando a ser executado, e retorna a quantidade de registros afetados
+- ```Query<T> / QueryAsync<T>```: recebe uma cadeia de caracteres com o comando a ser executado e retorna a saída como objeto de tipo T
