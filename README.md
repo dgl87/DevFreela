@@ -258,7 +258,7 @@ Alguns conceitos de Domain-Driven Design que utilizaremos
 
 ## Camada Application 
 - Camada responsável por código de aplicação, onde as funcionalidades expostas vão estar, em forma de serviços (ou Commands e Queries, dependendo do padrão utilizado)
-- Também contém os modelos de entrada e saída da aplicação, que serão utilizados diretamente na API (seja no retorno da API, ou no corpo da requisição
+- Também contém os modelos de entrada e saída da aplicação, que serão utilizados diretamente na API (seja no retorno da API, ou no corpo da requisição)
 
 **Contém os seguintes componentes:**
 - **Serviços:** classes responsáveis pelas funcionalidades expostas, geralmente sendo criado um por cada entidade. Em nosso caso, pode ser criado alguns como ProjectService e UserService
@@ -284,23 +284,23 @@ Por exemplo, usaremos um filtro no módulo de validação de APIs, e também um 
 - Containers / Buckets de dados, como no Amazon S3, Azure Storage, Google Cloud Storage
 
 ## O que é ORM?
-- ** Object-Relational Mapper **, representa ferramentas utilizadas para agilizar e simplificar operações que envolvem persistência de dados ou acesso a eles
-- Funcionam como uma ponte do ** modelo orientado a objetos, ** baseado em classes e propriedades e representados geralmente como JSON, para os ** modelos relacionais ** baseados em tabelas e colunas
+- **Object-Relational Mapper**, representa ferramentas utilizadas para agilizar e simplificar operações que envolvem persistência de dados ou acesso a eles
+- Funcionam como uma ponte do **modelo orientado a objetos,** baseado em classes e propriedades e representados geralmente como JSON, para os **modelos relacionais** baseados em tabelas e colunas
 
 No caso do .NET, antigamente precisava-se utilizar o ADO.NET, que é um conjunto de namespaces do .NET e suas classes e métodos para acesso a dados.
 Porém, ele não oferece uma alternativa ágil e simplificada, sendo bastante passivo de erros de escrita de nomes de colunas, entre outros problemas.
-Diante disso, surgiram os primeiros ORMs, se destacando o ** Entity Framework ** e o ** LINQ-to-SQL **
+Diante disso, surgiram os primeiros ORMs, se destacando o **Entity Framework** e o **LINQ-to-SQL**
 
 As ORMs foram se atualizando, oferecendo uma experiência mais flexível, permitindo tanto utilizar simplificações de acesso a tabelas, quanto a utilizar expressões SQL diretamente.
 
 # Entity Framework Core
 - É a ORM mais utilizada para desennvolvimento em .NET, sendo multiplataforma open-source, e mantida pela Microsoft
 - É madura, tendo sido evoluída junto ao .NET Core, e com performance e funcionalidades sendo melhoradas a cada versão
-- Os pacotes a serem utilizados são ** Microsoft.EntityFrameworkCore.SqlServer ** e ** Microsoft.Entity.FrameworkCore.Tolls **
+- Os pacotes a serem utilizados são **Microsoft.EntityFrameworkCore.SqlServer** e **Microsoft.Entity.FrameworkCore.Tolls**
 
 - Tem suporte a diferentes bancos de dados como SQL Server, SQLite, PostgreeSQL, MySQL, CosmosDB, etc
 
-** Pricipais conceitos **
+**Pricipais conceitos**
 - DbContext
 - DbSet
 - Migrations
@@ -308,16 +308,16 @@ As ORMs foram se atualizando, oferecendo uma experiência mais flexível, permit
 ## DbContext
 - Representa o banco de dados, que em bancos de dados relacionais é composto por tabelas, procedimentos armazenados, views, gatilhos entre outros
 - É composto por propriedades de tipo DbSet's
-- Esta classe deve ser herdada, e geralmente se utiliza o nome da aplicação + DbContext para nomear. Em nosso caso, poderia ser ** DevFreelaDbContext **
+- Esta classe deve ser herdada, e geralmente se utiliza o nome da aplicação + DbContext para nomear. Em nosso caso, poderia ser **DevFreelaDbContext**
 
 ## DbSet
 - Representa uma tabela de um banco de dados, sendo utilizado de maneira tipada, como DbSet<T>. O T seria uma entidade do domínio, que estaria sendo representada como uma tabela no banco de dados
-- Exemplos de DbSet que usaremos são ** DbSet<Project>, DbSet<User> e DbSet<Skill> **
+- Exemplos de DbSet que usaremos são **DbSet<Project>, DbSet<User> e DbSet<Skill>**
 
 ## Migration
 - Classe que representa alterações do modelo de dados da aplicações que devem ser replicados no banco de dados
-- Utilizados na abordagem **Code-First,**, onde o primeiro escrevemos o código, adicionamos as entidades como DbSet, configuramos corretamente, e então geramos a Migration
-- Devem ser executadas ** a cada alteração ** no modelo de daods, já que qualquer diferença entre o modelo da aplicação e do banco de daods resultará em erro
+- Utilizados na abordagem **Code-First**, onde o primeiro escrevemos o código, adicionamos as entidades como DbSet, configuramos corretamente, e então geramos a Migration
+- Devem ser executadas **a cada alteração** no modelo de daods, já que qualquer diferença entre o modelo da aplicação e do banco de daods resultará em erro
 
 Em sistemas reais existem diversas maneiras de se trabalhar com elas, como:
 - Geradas e executadas diretamente no banco de dados alvo
@@ -334,7 +334,7 @@ Existem diversas configurações que podem ser feitas em relação a DbSet, feit
 - Tabelas mapeadas a partir das entidades
 - Colunas mapeadas a partir das propriedades
 
-Método **OnModelCreating,** dentro da classe que herda do ** DbContext**
+Método **OnModelCreating,** dentro da classe que herda do **DbContext**
 
 ```c#
 protected override void OnModelCreating(ModelBuilder modelBuilder)
