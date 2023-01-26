@@ -1,7 +1,8 @@
-﻿using DevFreela.Application.Services.Interfaces;
+﻿using DevFreela.Application.InputModels;
+using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.ViewModels;
+using DevFreela.Core.Entities;
 using DevFreela.Infrastructure.Persistence;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DevFreela.Application.Services.Implementations
@@ -13,14 +14,28 @@ namespace DevFreela.Application.Services.Implementations
         {
             _dbContext = dbContext;
         }
-        public List<UserViewModel> GetAll()
+        public UserViewModel GetUser(int id)
         {
-            var users = _dbContext.Users;
-            var usersViewModel = users
-                .Select(u => new UserViewModel(u.FullName, u.Email, u.BirthDate))
-                .ToList();
+            var user = _dbContext.Users.SingleOrDefault(u => u.Id == id);
 
-            return usersViewModel;
+            if (user == null) return null;
+
+            var userViewModel = new UserViewModel(
+                user.FullName,
+                user.Email,
+                user.BirthDate);
+
+            return userViewModel;
+        }
+        public int Create(CreateUserInputModel inputModel)
+        {
+            var user = new User(
+                inputModel.FullName,
+                inputModel.Email,
+                inputModel.BirthDate);
+            _dbContext.Users.Add(user);
+
+            return user.Id;
         }
     }
 }

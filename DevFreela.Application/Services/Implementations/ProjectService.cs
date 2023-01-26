@@ -1,4 +1,5 @@
-﻿using DevFreela.Application.Services.Interfaces;
+﻿using DevFreela.Application.InputModels;
+using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.ViewModels;
 using DevFreela.Core.Entities;
 using DevFreela.Infrastructure.Persistence;
@@ -77,8 +78,7 @@ namespace DevFreela.Application.Services.Implementations
                 project.Description,
                 project.TotalCost,
                 project.StartAt,
-                project.FinishedAt
-                );
+                project.FinishedAt);
 
             return projectDetails;
         }
