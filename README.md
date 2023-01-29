@@ -400,9 +400,11 @@ Feito isso, basta executar os dois comandos seguintes, na pasta do projeto **Per
   
 ## EF Core em Memória
 Em algumas situações, a disponibilidade de um servidor SQL Server para o desenvolvimento de um projeto pode ser restrita, ou mesmo inexistente em início de projetos, por exemplo
+
 Isso pode ocorrer devido a burocracia no fornecimento de um servidor, problemas de indisponibilidade devido a instabilidade, entre outras situações.
 
 Em situações do tipo, o suporte a banco de dados em memória do Entity Framework Core pode literalmente salvar projetos
+
 Com o código a seguir, você não precisa mais se preocupar em aplicar migrations, e avançar o projeto mesmo sem BD
 ```c#
 services.AddDbContext<DevFreelaDbContext>(options => options.UseInMemoryDatabase("DevFreela"));
