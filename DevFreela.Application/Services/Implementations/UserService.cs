@@ -34,6 +34,7 @@ namespace DevFreela.Application.Services.Implementations
                 inputModel.Email,
                 inputModel.BirthDate);
             _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
 
             return user.Id;
         }
