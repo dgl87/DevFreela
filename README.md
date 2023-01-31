@@ -422,3 +422,33 @@ ORM mais performática e simples que o EF Core, de fácil adoção em um projeto
 Entre os métodos de extensão oferecidos, os mais utilizados são:
 - **Execute / ExecuteAsync:** recebe uma cadeia de caracteres com o comando a ser executado, e retorna a quantidade de registros afetados
 - ```Query<T> / QueryAsync<T>```: recebe uma cadeia de caracteres com o comando a ser executado e retorna a saída como objeto de tipo T
+
+# O que é CQRS
+- Sigla de Command-Query Responsability Segregation
+- Padrão de desencolcimento que separa as consultas (Queries) das ações que alteram o estado do sistema (Commands)
+- Implementado de diversas maneiras, mas geralmente fica na camada de aplicação. Também existem implementações dele com um projeto para Commands, e outro para Queries
+
+- Devido a essa separação lógica, facilita o uso de mais de um banco de dados. Porém, essa decisão vem com diversos problemas, como a consistência de dados
+- Melhora a legibilidade da aplicação, além de permitir maior separação de responsabilidades e estimula separação de modelos
+
+## Commands
+- Representam ações do sistema. que realizam alterações no estado dele
+- Podem ser mapeadas de 1 para 1 a partir dos métodos de serviços de aplicação!
+- Geralmente são nomeados com o sufixo Command, ficando por exemplo **_CreateProjectCommand_**
+
+- Os Commands contém as informações necessárias para ação, sendo similar ao modelo de entrada utilizados pelo serviço de aplicação
+- Para cada **Command** deverá existir um **CommandHandler** que é a classe que lida com aquele comando
+
+## Queries
+- Representam consultas no sistema que **NÃO** realizam alterações no estado dele
+- Podem ser mapeadas de 1 para 1 a partir dos métodos de serviços de aplicação!
+- Geralmente são nomeados com o sufixo Query, ficando por exemplo **_GetAllSkillsQuery_**
+
+- As queries contém as informações necessárias para a consulta, por exemplo, contendo o identificador ou parâmetro de busca
+- Para cada **Query** deverá existir um **QueryHandler**,  que é a classe que lida com aquela consulta
+
+## O que é o MediatR
+- Implementa o padrão mediator, oferecendo uma espécie de mensageria interna em memória
+- Tem suporte a Commands e Queries, delegando eles para serem processados pelos seus respectivos Handlers
+- Pacote MediatR é 
+	MediatR.Extensions.Microsoft.DependencyInjection
