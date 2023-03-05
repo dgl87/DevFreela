@@ -13,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Prometheus.DotNetRuntime;
+using System;
 
 namespace DevFreela.API
 {
@@ -21,9 +23,12 @@ namespace DevFreela.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Collector = CreateCollector();
         }
 
         public IConfiguration Configuration { get; }
+
+        public static IDisposable Collector;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -65,6 +70,20 @@ namespace DevFreela.API
             {
                 endpoints.MapControllers();
             });
+        }
+        public static IDisposable CreateCollector()
+        {
+            var builder = DotNetRuntimeStatsBuilder.Default();
+            builder = DotNetRuntimeStatsBuilder
+                .Customize()
+                .WithContentionStats(CaptureLevel.Informational)
+                .WithGcStats(CaptureLevel.Verbose)
+                .WithThreadPoolStats(CaptureLevel.Informational)
+                .WithExceptionStats(CaptureLevel.Errors)
+                .WithJitStats();
+
+            return builder
+                .StartCollecting();
         }
     }
 }
